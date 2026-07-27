@@ -1,0 +1,6 @@
+streamlit
+pandas
+numpy
+yfinance
+python-dateutil
+jugaad-data
