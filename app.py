@@ -19,6 +19,14 @@ st.set_page_config(page_title="Stock Data Generator", page_icon="📈")
 st.title("📈 Automated Stock Data Generator by Sameer")
 st.write("Generate historical reports and check latest corporate filings.")
 
+# --- DISPLAYING FLAGGED COMPANIES ---
+st.header("🎯 Daily Flagged Companies")
+if os.path.exists("flagged_stocks.csv"):
+    flagged_df = pd.read_csv("flagged_stocks.csv")
+    st.dataframe(flagged_df, use_container_width=True)
+else:
+    st.info("No flagged data generated yet. Run the daily screener to populate results.")
+
 
 # --- USER INPUT ---
 symbol = st.text_input("Enter NSE Symbol (e.g., HDFCBANK, TCS, INFY):").strip().upper()
