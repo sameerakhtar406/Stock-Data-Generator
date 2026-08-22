@@ -3,4 +3,5 @@ pandas
 numpy
 yfinance
 python-dateutil
-jugaad-data
+requests
+jugaad-data>=0.35.2
