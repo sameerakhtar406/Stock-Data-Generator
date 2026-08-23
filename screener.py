@@ -17,21 +17,41 @@ def fetch_nse_bhavcopy(target_date):
     try:
         filename = bhavcopy_save(target_date, "./")
         df = pd.read_csv(filename)
-        # Keep only standard Equities (EQ)
-        df = df[df['SERIES'] == 'EQ']
-        df = df[['SYMBOL', 'CLOSE', 'PREVCLOSE', 'TOTTRDQTY']]
+        
+        # 1. Strip invisible spaces from NSE column names
+        df.columns = df.columns.str.strip() 
+        
+        # 2. Handle both Old format and New UDiFF format
+        if 'SERIES' in df.columns:
+            df = df[df['SERIES'] == 'EQ']
+            df = df[['SYMBOL', 'CLOSE', 'PREVCLOSE', 'TOTTRDQTY']]
+        elif 'Srs' in df.columns:
+            df = df[df['Srs'] == 'EQ']
+            df = df[['TckrSymb', 'ClsPrc', 'PrvsClsPrc', 'TotTrdQty']]
+        else:
+            print(f"[NSE WARNING] Unrecognized columns for {target_date}: {df.columns.tolist()[:5]}")
+            os.remove(filename)
+            return pd.DataFrame()
+            
         df.columns = ['Symbol', 'Close', 'Prev_Close', 'Volume']
         df['Exchange'] = 'NSE'
         os.remove(filename) # Clean up file
         return df
-    except Exception:
+    except Exception as e:
+        print(f"[NSE ERROR] on {target_date}: {e}")
         return pd.DataFrame()
 
 def fetch_bse_bhavcopy(target_date):
     """Downloads and formats BSE Bhavcopy directly from their servers"""
     date_str = target_date.strftime("%d%m%y")
     url = f"https://www.bseindia.com/download/BhavCopy/Equity/EQ{date_str}_CSV.ZIP"
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    
+    # Add robust browser headers so BSE doesn't block our automated script
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Referer': 'https://www.bseindia.com/'
+    }
     
     try:
         res = requests.get(url, headers=headers, timeout=10)
@@ -40,15 +60,16 @@ def fetch_bse_bhavcopy(target_date):
                 with z.open(z.namelist()[0]) as f:
                     df = pd.read_csv(f)
                     df.columns = df.columns.str.strip()
-                    # Filter for standard Equity (Q)
                     if 'SC_TYPE' in df.columns:
                         df = df[df['SC_TYPE'] == 'Q']
                     df = df[['SC_NAME', 'CLOSE', 'PREVCLOSE', 'NO_OF_SHRS']]
                     df.columns = ['Symbol', 'Close', 'Prev_Close', 'Volume']
                     df['Exchange'] = 'BSE'
                     return df
-    except Exception:
-        pass
+        else:
+            print(f"[BSE WARNING] Server returned status {res.status_code} for {target_date}")
+    except Exception as e:
+        print(f"[BSE ERROR] on {target_date}: {e}")
     return pd.DataFrame()
 
 def run_screener():
