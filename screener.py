@@ -59,9 +59,15 @@ def run_screener():
     days_collected = 0
     
     # Go back in time until we find exactly 31 valid trading days (skipping weekends/holidays)
-    print("[SYSTEM] Fetching 31 days of historical Bhavcopy data for NSE & BSE. This may take 2 minutes...")
+    print("[SYSTEM] Fetching 31 days of historical Bhavcopy data for NSE & BSE...")
+    
+    attempts = 0 # NEW: Add a circuit breaker
+    
     while days_collected < 31:
-        # Fetch data for this specific date
+        if attempts > 60: # NEW: Stop if we go 60 days back without finding 31 valid days
+            print("[ERROR] Could not fetch enough recent data. Exiting to prevent stale data.")
+            return 
+            
         nse_df = fetch_nse_bhavcopy(current_date)
         bse_df = fetch_bse_bhavcopy(current_date)
         
@@ -71,9 +77,10 @@ def run_screener():
             combined_daily_df['Date'] = current_date
             trading_days_data.append(combined_daily_df)
             days_collected += 1
-            print(f"   -> Fetched Market Data for {current_date} ({len(combined_daily_df)} companies)")
+            print(f"   -> Fetched Market Data for {current_date}")
             
         current_date -= timedelta(days=1)
+        attempts += 1 # NEW: Increment attempt counter
         time.sleep(1) # Being polite to the exchange servers
         
     # Combine all 31 days into one massive dataset
