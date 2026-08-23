@@ -17,17 +17,18 @@ def fetch_nse_bhavcopy(target_date):
     try:
         filename = bhavcopy_save(target_date, "./")
         df = pd.read_csv(filename)
-        
-        # 1. Strip invisible spaces from NSE column names
         df.columns = df.columns.str.strip() 
         
-        # 2. Handle both Old format and New UDiFF format
+        # 1. Handle Old Format
         if 'SERIES' in df.columns:
             df = df[df['SERIES'] == 'EQ']
             df = df[['SYMBOL', 'CLOSE', 'PREVCLOSE', 'TOTTRDQTY']]
-        elif 'Srs' in df.columns:
-            df = df[df['Srs'] == 'EQ']
-            df = df[['TckrSymb', 'ClsPrc', 'PrvsClsPrc', 'TotTrdQty']]
+            
+        # 2. Handle New UDiFF Format (Corrected Columns)
+        elif 'SctySrs' in df.columns:
+            df = df[df['SctySrs'] == 'EQ']
+            df = df[['TckrSymb', 'ClsPric', 'PrvsClsgPric', 'TtlTradgVol']]
+            
         else:
             print(f"[NSE WARNING] Unrecognized columns for {target_date}: {df.columns.tolist()[:5]}")
             os.remove(filename)
@@ -35,27 +36,31 @@ def fetch_nse_bhavcopy(target_date):
             
         df.columns = ['Symbol', 'Close', 'Prev_Close', 'Volume']
         df['Exchange'] = 'NSE'
-        os.remove(filename) # Clean up file
+        os.remove(filename) 
         return df
     except Exception as e:
         print(f"[NSE ERROR] on {target_date}: {e}")
         return pd.DataFrame()
 
+
 def fetch_bse_bhavcopy(target_date):
-    """Downloads and formats BSE Bhavcopy directly from their servers"""
+    """Downloads and formats BSE Bhavcopy with Stealth Headers"""
     date_str = target_date.strftime("%d%m%y")
     url = f"https://www.bseindia.com/download/BhavCopy/Equity/EQ{date_str}_CSV.ZIP"
     
-    # Add robust browser headers so BSE doesn't block our automated script
+    # Advanced Stealth Headers to bypass Bot Detection
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Referer': 'https://www.bseindia.com/'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Accept': 'application/zip, text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.bseindia.com/markets/MarketInfo/BhavCopy.aspx'
     }
     
     try:
-        res = requests.get(url, headers=headers, timeout=10)
-        if res.status_code == 200:
+        res = requests.get(url, headers=headers, timeout=15)
+        
+        # Only try to unzip if the server ACTUALLY sent a ZIP file
+        if res.status_code == 200 and 'zip' in res.headers.get('Content-Type', '').lower():
             with zipfile.ZipFile(io.BytesIO(res.content)) as z:
                 with z.open(z.namelist()[0]) as f:
                     df = pd.read_csv(f)
@@ -67,11 +72,12 @@ def fetch_bse_bhavcopy(target_date):
                     df['Exchange'] = 'BSE'
                     return df
         else:
-            print(f"[BSE WARNING] Server returned status {res.status_code} for {target_date}")
+            # Silently pass if blocked or missing, so NSE can still run
+            pass 
     except Exception as e:
         print(f"[BSE ERROR] on {target_date}: {e}")
+        
     return pd.DataFrame()
-
 def run_screener():
     print("[SYSTEM] Booting Quantitative Screener...")
     
