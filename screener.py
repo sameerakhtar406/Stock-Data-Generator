@@ -156,6 +156,7 @@ def send_email(attachment_path, stock_count, run_date):
     sender_email = os.getenv("SENDER_EMAIL")
     sender_password = os.getenv("SENDER_PASSWORD")
     recipient_email = os.getenv("RECIPIENT_EMAIL")
+    recipient_list = [email.strip() for email in raw_recipients.split(",")]
 
     if not (sender_email and sender_password and recipient_email):
         print("[WARNING] Email secrets not configured. Exiting.")
@@ -163,7 +164,7 @@ def send_email(attachment_path, stock_count, run_date):
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
-    msg['To'] = recipient_email
+    msg['To'] = recipient_list
     msg['Subject'] = f" Daily Screener Report by Sam - {run_date} ({stock_count} Stocks Flagged)"
 
     body = f"Hello,\n\nMarket analysis is complete for {run_date}.\n\nThe screener analyzed roughly 7,000 active Indian equities across both the NSE and BSE. It found {stock_count} companies today that experienced a 2x+ Volume Breakout while maintaining a tight 2-3% upward price action.\n\nThe detailed CSV is attached.\n\nBest regards,\n Sameer 'Sam'"
