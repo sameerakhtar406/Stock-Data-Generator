@@ -2,7 +2,7 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 
-st.title("🎯 High Return & Deep Discount Screener")
+st.title("MARKET CAP>20K Cr: High Return & Deep Discount Screener")
 
 # A small sample list for the UI. (Running 7,000 live will time out!)
 sample_tickers = ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "SUZLON.NS"]
