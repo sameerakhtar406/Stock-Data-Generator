@@ -155,7 +155,7 @@ def run_screener():
 def send_email(attachment_path, stock_count, run_date):
     sender_email = os.getenv("SENDER_EMAIL")
     sender_password = os.getenv("SENDER_PASSWORD")
-    recipient_email = os.getenv("RECIPIENT_EMAIL")
+    raw_recipients = os.getenv("RECIPIENT_EMAIL")
     recipient_list = [email.strip() for email in raw_recipients.split(",")]
 
     if not (sender_email and sender_password and recipient_email):
