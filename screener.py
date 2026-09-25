@@ -155,8 +155,8 @@ def run_screener():
 def send_email(attachment_path, stock_count, run_date):
     sender_email = os.getenv("SENDER_EMAIL")
     sender_password = os.getenv("SENDER_PASSWORD")
-    raw_recipients = os.getenv("RECIPIENT_EMAIL")
-    recipient_list = [email.strip() for email in raw_recipients.split(",")]
+    recipient_email = os.getenv("RECIPIENT_EMAIL")
+    recipient_list = [email.strip() for email in recipient_email.split(",")]
 
     if not (sender_email and sender_password and recipient_email):
         print("[WARNING] Email secrets not configured. Exiting.")
