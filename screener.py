@@ -152,7 +152,7 @@ def run_screener():
 
     recipient_email = os.getenv("RECIPIENT_EMAIL")
     recipient_list = [email.strip() for email in recipient_email.split(",")]
-    for(em in recipient_list):
+    for em in recipient_list:
         send_email(output_filename, len(flagged), today_date,em)
 
 def send_email(attachment_path, stock_count, run_date,to_email):
