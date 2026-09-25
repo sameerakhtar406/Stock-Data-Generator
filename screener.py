@@ -161,9 +161,9 @@ def send_email(attachment_path, stock_count, run_date,to_email):
     #recipient_email = os.getenv("RECIPIENT_EMAIL")
     #recipient_list = [email.strip() for email in recipient_email.split(",")]
 
-    if not (sender_email and sender_password and recipient_email):
-        print("[WARNING] Email secrets not configured. Exiting.")
-        return
+    #if not (sender_email and sender_password and recipient_email):
+        #print("[WARNING] Email secrets not configured. Exiting.")
+        #return
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
