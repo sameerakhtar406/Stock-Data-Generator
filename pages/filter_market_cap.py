@@ -6,7 +6,7 @@ import numpy as np
 st.title("MARKET CAP: High Return & Deep Discount Screener")
 
 # Expanded sample list to increase chances of finding a match
-sample_tickers = ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "SUZLON.NS", "ITC.NS", "ZOMATO.NS", "IREDA.NS"]
+sample_tickers = ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "SUZLON.NS", "ITC.NS", "ZOMATO.NS", "IREDA.NS", "YESBANK.NS", "IDEA.NS"]
 
 def get_fundamental_fallback(ticker_obj, metric_name):
     """Fallback calculation if standard yfinance info is missing."""
