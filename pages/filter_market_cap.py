@@ -75,7 +75,7 @@ def analyze_companies(tickers):
     filtered_df = df[
         (df['ROE'] > 0.20) & 
         (df['ROCE'] > 0.20) & 
-        (df['CMP'] >= (0.70 * df['ATH'])) 
+        (df['CMP'] <= (0.70 * df['ATH'])) 
     ].copy()
     
     # Categorize by Market Cap (> 20,000 Crores = 200,000,000,000 raw)
