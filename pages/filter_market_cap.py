@@ -96,7 +96,7 @@ if st.button("Run Fundamental Screen"):
         results = analyze_companies(sample_tickers)
         
         if results.empty:
-            st.warning("No companies currently meet all strict criteria.")
+            st.warning("No companies currently meet all strict criteria.(Try running the full dataset!)")
         else:
             # Apply the sidebar filter
             if market_cap_filter != "Show All":
