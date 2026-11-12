@@ -62,7 +62,8 @@ def fetch_bse_bhavcopy(target_date):
         pass
     return pd.DataFrame()
 
-def run_historical_screener(target_date_str):
+# Update the function signature to accept an optional progress callback
+def run_historical_screener(target_date_str, progress_callback=None):
     target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date()
     print(f"\n[SYSTEM] Running historical screener for Day-31: {target_date}...")
     
@@ -74,7 +75,7 @@ def run_historical_screener(target_date_str):
     while days_collected < 31:
         if attempts > 60:
             print("[ERROR] Could not fetch 31 valid historical trading days.")
-            return
+            return pd.DataFrame()  # 1. Return empty DataFrame instead of None
             
         nse_df = fetch_nse_bhavcopy(current_date)
         bse_df = fetch_bse_bhavcopy(current_date)
@@ -85,6 +86,8 @@ def run_historical_screener(target_date_str):
             trading_days_data.append(combined)
             days_collected += 1
             print(f"   -> [{days_collected}/31] Collected data for {current_date}")
+            if progress_callback:  # 2. Optional UI progress hook
+                progress_callback(days_collected, 31, current_date)
             
         current_date -= timedelta(days=1)
         attempts += 1
@@ -119,6 +122,8 @@ def run_historical_screener(target_date_str):
     flagged.to_csv(out_file, index=False)
     print(f"\n✅ Completed! Found {len(flagged)} flagged companies for {target_date_str}.")
     print(f"📁 Saved report to: {out_file}")
+    
+    return flagged  # 3. Return the DataFrame for Streamlit
 
 if __name__ == "__main__":
     date_input = input("Enter target date (YYYY-MM-DD) [e.g., 2026-07-24]: ").strip()
