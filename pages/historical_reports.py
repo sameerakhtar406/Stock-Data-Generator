@@ -62,3 +62,6 @@ if os.path.exists(csv_filename):
         )
 else:
     st.info("Select a target date above and click **Generate Historical Report** to fetch results.")
+
+st.divider()
+st.caption("Made by Sameer Akhtar | Data sourced from NSE & Yahoo Finance")
