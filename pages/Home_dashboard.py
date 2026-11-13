@@ -160,3 +160,5 @@ with tab_lookup:
                         st.error(f"❌ Error fetching data: {e}")
             else:
                 st.warning("Please enter an NSE symbol above first.")
+st.divider()
+st.caption("Made by Sameer Akhtar | Data sourced from NSE & Yahoo Finance")
