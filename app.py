@@ -9,7 +9,7 @@ st.set_page_config(
 
 # Define custom sidebar titles, icons, and display order
 pages = [
-    st.Page("pages/HOME_dashboard.py.py", title="Daily Flagging Screener", icon="📈", default=True),
+    st.Page("pages/Home_dashboard.py", title="Daily Flagging Screener", icon="📈", default=True),
     st.Page("pages/filter_market_cap.py", title="ROCE/ROE Market Cap Screener", icon="💰"),
     st.Page("pages/historical_reports.py", title="Historical Reports", icon="🕰️"),
 ]
