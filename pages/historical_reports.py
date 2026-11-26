@@ -28,7 +28,7 @@ target_date_str = selected_date.strftime("%Y-%m-%d")
 csv_filename = f"flagged_stocks_{target_date_str}.csv"
 
 # Run the root screener when clicked
-if st.button("🚀 Generate Historical Report", type="primary"):
+if st.button("Generate Historical Report", type="primary"):
     progress_bar = st.progress(0)
     status_text = st.empty()
 
